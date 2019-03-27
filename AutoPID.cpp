@@ -49,7 +49,13 @@ void AutoPID::run() {
 
   //if bang thresholds are defined and we're outside of them, use bang-bang control
   double tmp;
-  if ( _bangOn && ( abs( tmp = *_setpoint - *_input ) > _bangOn ) ) {
+  double absError = *_setpoint - *_input;
+
+  if ( absError < 0 ) {
+    absError *= -1;
+  }
+
+  if ( _bangOn && ( absError > _bangOn ) ) {
     if ( tmp > 0 ) {
       *_output = _outputMax;
     } else {
@@ -57,7 +63,7 @@ void AutoPID::run() {
     }
 
     _lastStep = millis();
-  } else if ( _bangOff && ( abs( *_input - *_setpoint ) < _bangOff ) ) {
+  } else if ( _bangOff && ( absError < _bangOff ) ) {
     *_output = 0;
     _lastStep = millis();
   } else {                                    //otherwise use PID control
@@ -72,7 +78,15 @@ void AutoPID::run() {
       _previousError = _error;
       double pid = ( _Kp * _error ) + ( _Ki * _integral ) + ( _Kd * _dError );
       //*_output = _outputMin + (constrain(PID, 0, 1) * (_outputMax - _outputMin));
-      *_output = constrain( pid, _outputMin, _outputMax );
+      if ( pid < _outputMin ) {
+        pid = _outputMin;
+      }
+
+      if ( pid > _outputMax ) {
+        pid = _outputMax;
+      }
+
+      *_output = pid;
     }
   }
 }//void AutoPID::run
