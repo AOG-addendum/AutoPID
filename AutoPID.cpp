@@ -48,7 +48,6 @@ void AutoPID::run() {
   }
 
   //if bang thresholds are defined and we're outside of them, use bang-bang control
-  double tmp;
   double absError = *_setpoint - *_input;
 
   if ( absError < 0 ) {
@@ -56,7 +55,7 @@ void AutoPID::run() {
   }
 
   if ( _bangOn && ( absError > _bangOn ) ) {
-    if ( tmp > 0 ) {
+    if ( *_setpoint - *_input > 0 ) {
       *_output = _outputMax;
     } else {
       *_output = _outputMin;
