@@ -61,10 +61,14 @@ void AutoPID::run() {
       *_output = _outputMin;
     }
 
-    _lastStep = millis();
+    // reset the integral and derivative part
+    reset();
+//     _lastStep = millis();
   } else if ( _bangOff && ( absError < _bangOff ) ) {
     *_output = 0;
-    _lastStep = millis();
+    // reset the integral and derivative part
+    reset();
+//     _lastStep = millis();
   } else {                                    //otherwise use PID control
     unsigned long _dT = millis() - _lastStep;   //calculate time since last update
 
