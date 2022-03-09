@@ -75,11 +75,11 @@ void AutoPID::run() {
     if ( _dT >= _timeStep ) {                   //if long enough, do PID calculations
       _lastStep = millis();
       double _error = *_setpoint - *_input;
-      _integral += ( _error + _previousError ) / 2 * _dT / 1000.0; //Riemann sum integral
+      _integral += ( _error * _Ki ) * _dT / 1000.0; // standard integral
       //_integral = constrain(_integral, _outputMin/_Ki, _outputMax/_Ki);
       double _dError = ( _error - _previousError ) / _dT / 1000.0; //derivative
       _previousError = _error;
-      double pid = ( _Kp * _error ) + ( _Ki * _integral ) + ( _Kd * _dError );
+      double pid = ( _Kp * _error ) + ( _integral ) + ( _Kd * _dError );
       //*_output = _outputMin + (constrain(PID, 0, 1) * (_outputMax - _outputMin));
       if ( pid < _outputMin ) {
         pid = _outputMin;
